@@ -1,6 +1,6 @@
 import pygame as p  
 from pygame.locals import *
-import ChessEngine
+import ChessEngine, SmartMoveFinder
 
 WIDTH = HEIGHT = 512 
 DIMENSION = 8
@@ -33,20 +33,22 @@ def main():
     validMoves = gs.getValidMoves()
     moveMade = False  #flag variable for when a move is made
     animate = False #flag variable for when we should animate a move
-    loadImages() #only do this once, before the while loop
     loadImages() #Only do this once, before the while loop
     running = True
     sqSelected = ()  #no squared is selected, keep track of the last click of the user (tuple: (row, col))
     playerClicks = []  #keep track of player clicks (two tuples: [(6, 4), (6, 4)])
     gameOver = False
+    playerOne = True #if a human is playing white, then this will be True. If an AI is playing, then false
+    playerTwo = False #Same as above but for black
     
     while running:
+        humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
             #mouse handler 
             elif e.type == p.MOUSEBUTTONDOWN:
-                if not gameOver:
+                if not gameOver and humanTurn:
                     location = p.mouse.get_pos() #(x , y) location of mouse
                     col = location[0]//SQ_SIZE
                     row = location[1]//SQ_SIZE
@@ -64,7 +66,7 @@ def main():
                                 gs.makeMove(validMoves[i])
                                 moveMade = True
                                 animate = True
-                                sqSelected = ()  #reset user clicks
+                                sqSelected = () #reset user click
                                 playerClicks = []
                         if not moveMade:
                             playerClicks = [sqSelected]
@@ -83,6 +85,13 @@ def main():
                     moveMade = False
                     animate = False
 
+        #AI move finder
+        if not gameOver and not humanTurn:
+            AIMove = SmartMoveFinder.findRandomMove(validMoves)
+            gs.makeMove(AIMove)
+            moveMade = True
+            animate = True
+
         if moveMade:
             if animate:
                 animateMove(gs.moveLog[-1], screen, gs.board, clock)
@@ -95,13 +104,15 @@ def main():
         if gs.checkmate:
             gameOver = True
             if gs.whiteToMove:
-                drawText(screen, 'Black wins by chekmate')
+                drawText(screen, 'Black wins by checkmate')
             else:
-                drawText(screen, 'White wins by chekmate')
+                drawText(screen, 'White wins by checkmate')
+
         elif gs.stalemate:
             gameOver = True
             drawText(screen, 'Stalemate')
-        
+
+
         clock.tick(MAX_FPS)
         p.display.flip()
 
@@ -118,7 +129,7 @@ def highlightSquares(screen, gs, validMoves, sqSelected):
             s.fill(p.Color('blue'))
             screen.blit(s, (c*SQ_SIZE, r*SQ_SIZE))
             #highlight moves from that square
-            s.fill(p.Color('yelow'))
+            s.fill(p.Color('yellow'))
             for move in validMoves:
                 if move.startRow == r and move.startCol == c:
                     screen.blit(s, (move.endCol*SQ_SIZE, move.endRow*SQ_SIZE))
