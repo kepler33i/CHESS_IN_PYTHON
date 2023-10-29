@@ -108,6 +108,9 @@ class GameState():
                     self.board[move.endRow][move.endCol-2] = self.board[move.endRow][move.endCol+1]
                     self.board[move.endRow][move.endCol+1] = '--'
 
+            self.checkmate = False
+            self.stalemate = False
+
     '''
     Update the castle rights given the move
     ''' 
@@ -154,9 +157,9 @@ class GameState():
             self.undoMove()
         if len(moves) == 0: #either checkmate or stalemate // ya sea jaque mate o punto muerto
             if self.inCheck():
-                self.checkMate = True
+                self.checkmate = True
             else:
-                self.staleMate = True
+                self.stalemate = True
         
         if self.whiteToMove:
             self.getCastleMoves(self.whiteKingLocation[0], self.whiteKingLocation[1], moves)
@@ -317,7 +320,7 @@ class GameState():
         allyColor = "w" if self.whiteToMove else "b"
         for i in range(8):
             endRow = r + kingMoves[i][0]
-            endCol = r + kingMoves[i][1]
+            endCol = c + kingMoves[i][1]
             if 0 <= endRow < 8 and 0 <= endCol < 8:
                 endPiece = self.board[endRow][endCol]
                 if endPiece[0] != allyColor: #not an ally piece (empty or enemy piece)
@@ -395,5 +398,3 @@ class Move():
     
     def getRankFile(self, r, c):
         return self.colsToFiles[c] + self.rowsToRanks[r]
-    
-#arprobando1122

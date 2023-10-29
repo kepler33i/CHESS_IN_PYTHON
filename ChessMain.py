@@ -38,7 +38,7 @@ def main():
     sqSelected = ()  #no squared is selected, keep track of the last click of the user (tuple: (row, col))
     playerClicks = []  #keep track of player clicks (two tuples: [(6, 4), (6, 4)])
     gameOver = False
-    playerOne = True #if a human is playing white, then this will be True. If an AI is playing, then false
+    playerOne = False #if a human is playing white, then this will be True. If an AI is playing, then false
     playerTwo = False #Same as above but for black
     
     while running:
@@ -77,6 +77,7 @@ def main():
                     gs.undoMove()
                     moveMade = True
                     animate = False
+                    gameOver = False
                 if e.key == p.K_r:  #reset the board when 'r' is pressed
                     gs = ChessEngine.GameState()
                     validMoves = gs.getValidMoves()
@@ -84,10 +85,13 @@ def main():
                     playerClicks = []
                     moveMade = False
                     animate = False
+                    gameOver = False
 
         #AI move finder
         if not gameOver and not humanTurn:
-            AIMove = SmartMoveFinder.findRandomMove(validMoves)
+            AIMove = SmartMoveFinder.findBestMove(gs, validMoves)
+            if AIMove is None:
+                AIMove = SmartMoveFinder.findRandomMove(validMoves)
             gs.makeMove(AIMove)
             moveMade = True
             animate = True
@@ -194,10 +198,13 @@ def drawText(screen, text):
     textObject = font.render(text, 0, p.color('Gray'))
     textLocation = p.Rect(0, 0, WIDTH, HEIGHT).move(WIDTH/2 - textObject.get_width()/2, HEIGHT/2 - textObject.get_height()/2)
     screen.blit(textObject, textLocation)
-    textObject = font.render(text, 0, p.Color('Black'))
+    textObject = font.render(text, 0, p.color('Black'))
     screen.blit(textObject, textLocation.move(2, 2))
 
 
 
 if __name__ == "__main__":
     main()
+
+
+#PART 13. V.0.4
