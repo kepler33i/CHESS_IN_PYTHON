@@ -1,0 +1,19 @@
+
+ChessEngine:
+	line 160
+	line 162
+	corregido de checkMate a checkmate
+
+bug en el rey que no puede comer directamente y se mueve mas de 1 casilla--> Corregido
+
+una vez que se hace jaque mate no aparece el texto
+File "c:\Users\33\desktop\CHESS_PYTHON\ChessMain.py", line 113, in main    
+    drawText(screen, 'White wins by checkmate')
+  File "c:\Users\33\desktop\CHESS_PYTHON\ChessMain.py", line 198, in drawText
+    textObject = font.render(text, 0, p.color('Gray'))
+                                      ^^^^^^^^^^^^^^^
+
+
+
+Se avanzo en SmartMoveFinder con AI, se vio el video parte 14
+a continuacion seria el video 15
